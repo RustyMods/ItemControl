@@ -1,0 +1,7 @@
+class: "Class"
+to_craft: "to craft"
+to_equip: "to equip"
+to_consume: "to consume"
+required: "required"
+lvl: "lvl"
+skill: "skill"
