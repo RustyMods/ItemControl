@@ -4,19 +4,21 @@ namespace ItemControl.Requirements;
 
 public static class Patches
 {
-    [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.GetAmmoItem))]
-    private static class CanGetAmmo
+    [HarmonyPatch(typeof(Attack), nameof(Attack.StartDraw))]
+    private static class CanUseAmmo
     {
-        private static void Postfix(ref ItemDrop.ItemData __result)
+        private static void Postfix(Humanoid character, ItemDrop.ItemData weapon, ref bool __result)
         {
+            if (character != Player.m_localPlayer) return;
             if (ItemControlPlugin._Enabled.Value is ItemControlPlugin.Toggle.Off) return;
-            if (!ItemControlManager.CanEquip(__result.m_shared.m_name, true))
-            {
-                __result = null;
-            };
-        } 
+            ItemDrop.ItemData ammo = Attack.FindAmmo(character, weapon);
+            if (ammo == null) return;
+            if (ItemControlManager.CanEquip(ammo.m_shared.m_name, true)) return;
+            Player.m_localPlayer.Message(MessageHud.MessageType.Center, $"{ammo.m_shared.m_name} $msg_locked");
+            __result = false;
+        }
     }
-    
+
     [HarmonyPatch(typeof(Player), nameof(Player.ConsumeItem))]
     private static class CanConsume
     {

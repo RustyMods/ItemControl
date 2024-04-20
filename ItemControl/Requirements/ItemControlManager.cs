@@ -412,28 +412,6 @@ public static class ItemControlManager
                 m_skillName = requirement.Skill
             });
         }
-
-        // foreach (SkillRequirement skillRequirement in data.SkillRequirements)
-        // {
-        //     if (!Enum.TryParse(skillRequirement.Skill, out Skills.SkillType skill))
-        //     {
-        //         string normalizedSkill = skillRequirement.Skill.Replace("_", " ");
-        //         int hashCode = normalizedSkill.GetStableHashCode();
-        //         Skills.SkillType skillType = (Skills.SkillType)Math.Abs(hashCode);
-        //         if (Player.m_localPlayer && Player.m_localPlayer.m_skills.GetSkillDef(skillType) == null) return false;
-        //         skill = skillType;
-        //     }
-        //     validatedItemControlData.m_requirements.Add(new ValidatedRequirement()
-        //     {
-        //         m_skill = skill,
-        //         m_skillName = skillRequirement.Skill.Replace("_", " "),
-        //         m_level = skillRequirement.Level,
-        //         m_blockCraft = skillRequirement.BlockCraft,
-        //         m_blockEquip = skillRequirement.BlockEquip,
-        //         m_blockConsume = skillRequirement.BlockConsume
-        //     });
-        //     validatedItemControlData.AlmanacClassRequirement = data.AlmanacClassRequirement;
-    
         return true;
     }
     

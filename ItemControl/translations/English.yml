@@ -5,3 +5,5 @@ to_consume: "to consume"
 required: "required"
 lvl: "lvl"
 skill: "skill"
+
+msg_locked: "Locked"
