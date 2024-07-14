@@ -6,6 +6,7 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using ItemControl.Managers;
+using ItemControl.Requirements;
 using JetBrains.Annotations;
 using ServerSync;
 
@@ -15,7 +16,7 @@ namespace ItemControl
     public class ItemControlPlugin : BaseUnityPlugin
     {
         internal const string ModName = "ItemControl";
-        internal const string ModVersion = "1.0.1";
+        internal const string ModVersion = "1.0.3";
         internal const string Author = "RustyMods";
         private const string ModGUID = Author + "." + ModName;
         private static string ConfigFileName = ModGUID + ".cfg";
@@ -29,7 +30,7 @@ namespace ItemControl
         public void Awake()
         {
             Localizer.Load(); 
-
+            ItemControlManager.LoadCustomSkillNames();
             InitConfigs();
             Assembly assembly = Assembly.GetExecutingAssembly();
             _harmony.PatchAll(assembly);
@@ -72,6 +73,7 @@ namespace ItemControl
 
         private static ConfigEntry<Toggle> _serverConfigLocked = null!;
         public static ConfigEntry<Toggle> _Enabled = null!;
+        public static ConfigEntry<Toggle> _LearnItems = null!;
 
         private void InitConfigs()
         {
@@ -80,6 +82,13 @@ namespace ItemControl
             _ = ConfigSync.AddLockingConfigEntry(_serverConfigLocked);
 
             _Enabled = config("2 - Settings", "Enabled", Toggle.On, "If on, plugin controls items");
+            _LearnItems = config("2 - Settings", "Auto Learn Items", Toggle.Off,
+                "If on, plugin will teach players all the registered items added into item control");
+            _LearnItems.SettingChanged += (sender, args) =>
+            {
+                if (_LearnItems.Value is Toggle.Off) return;
+                ItemControlManager.LearnUnknownRecipes();
+            };
 
         }
         #region ConfigUtils

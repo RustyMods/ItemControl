@@ -5,5 +5,8 @@ to_consume: "to consume"
 required: "required"
 lvl: "lvl"
 skill: "skill"
-
+text_level: 'Level'
 msg_locked: "Locked"
+craft_requirement: 'Craft Requirements'
+equip_requirement: 'Equip Requirements'
+consume_requirement: 'Consume Requirements'

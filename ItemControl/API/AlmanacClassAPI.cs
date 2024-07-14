@@ -5,7 +5,7 @@ namespace ItemControl.API;
 
 public static class AlmanacClassAPI
 {
-    public static bool installed;
+    public static readonly bool installed;
     private static readonly MethodInfo? API_AddExperience;
     private static readonly MethodInfo? API_GetLevel;
     private static readonly MethodInfo? API_GetCharacteristic;

@@ -1,9 +1,22 @@
 ﻿using HarmonyLib;
-
 namespace ItemControl.Requirements;
 
 public static class Patches
 {
+    [HarmonyPatch(typeof(Humanoid), nameof(Humanoid.EquipItem))]
+    private static class Humanoid_EquipItem_Patch
+    {
+        private static bool Prefix(Humanoid __instance, ItemDrop.ItemData item)
+        {
+            if (ItemControlPlugin._Enabled.Value is ItemControlPlugin.Toggle.Off) return true;
+            if (ItemControlManager.CanEquip(item.m_shared.m_name, true)) return true;
+            if (!Player.m_localPlayer) return false;
+            if (__instance != Player.m_localPlayer) return true;
+            Player.m_localPlayer.Message(MessageHud.MessageType.Center, $"{item.m_shared.m_name} $msg_locked");
+            return false;
+        }
+    }
+    
     [HarmonyPatch(typeof(Attack), nameof(Attack.StartDraw))]
     private static class CanUseAmmo
     {
@@ -78,6 +91,7 @@ public static class Patches
         }
     }
 
+    [HarmonyPriority(Priority.Last)]
     [HarmonyPatch(typeof(ObjectDB), nameof(ObjectDB.Awake))]
     private static class Server_Initialize_ItemController
     {
@@ -90,6 +104,8 @@ public static class Patches
             ItemControlPlugin.ItemControlLogger.LogDebug("Server: Initializing Item Controller");
             ItemControlManager.InitItemController();
             ItemControlManager.InitFileWatcher();
+            if (ItemControlPlugin._LearnItems.Value is ItemControlPlugin.Toggle.Off) return;
+            ItemControlManager.LearnUnknownRecipes();
         }
     }
 
@@ -102,5 +118,7 @@ public static class Patches
             ItemControlManager.InitOnServerChange();
         }
     }
+
+
     
 }
