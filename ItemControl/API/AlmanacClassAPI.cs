@@ -17,12 +17,12 @@ public static class AlmanacClassAPI
 
     public static int GetLevel()
     {
-        return (int)(API_GetLevel?.Invoke(null, null) ?? Int32.MaxValue);
+        return (int)(API_GetLevel?.Invoke(null, null) ?? int.MaxValue);
     }
 
     private static int GetCharacteristic(string type)
     {
-        return (int)(API_GetCharacteristic?.Invoke(null, new object[] { type }) ?? Int32.MaxValue);
+        return (int)(API_GetCharacteristic?.Invoke(null, new object[] { type }) ?? int.MaxValue);
     }
 
     public static int GetConstitution() => GetCharacteristic("Constitution");
@@ -30,8 +30,6 @@ public static class AlmanacClassAPI
     public static int GetStrength() => GetCharacteristic("Strength");
     public static int GetIntelligence() => GetCharacteristic("Intelligence");
     public static int GetWisdom() => GetCharacteristic("Wisdom");
-
-
     static AlmanacClassAPI()
     {
         if (Type.GetType("AlmanacClasses.API.API, AlmanacClasses") is not { } api)

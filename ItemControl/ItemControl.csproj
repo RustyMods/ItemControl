@@ -110,6 +110,7 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="API\AlmanacClassAPI.cs" />
+        <Compile Include="API\EpicMMOSystem_API.cs" />
         <Compile Include="Managers\LocalizationManager.cs" />
         <Compile Include="Plugin.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />

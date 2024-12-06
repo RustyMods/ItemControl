@@ -9,7 +9,8 @@ public static class Patches
         private static bool Prefix(Humanoid __instance, ItemDrop.ItemData item)
         {
             if (ItemControlPlugin._Enabled.Value is ItemControlPlugin.Toggle.Off) return true;
-            if (ItemControlManager.CanEquip(item.m_shared.m_name, true)) return true;
+            ValidatedItemControlData data = ItemControlManager.GetItemControlData(item.m_shared.m_name, true);
+            if (data.CanEquip()) return true;
             if (!Player.m_localPlayer) return false;
             if (__instance != Player.m_localPlayer) return true;
             Player.m_localPlayer.Message(MessageHud.MessageType.Center, $"{item.m_shared.m_name} $msg_locked");
@@ -24,9 +25,9 @@ public static class Patches
         {
             if (character != Player.m_localPlayer) return;
             if (ItemControlPlugin._Enabled.Value is ItemControlPlugin.Toggle.Off) return;
-            ItemDrop.ItemData ammo = Attack.FindAmmo(character, weapon);
-            if (ammo == null) return;
-            if (ItemControlManager.CanEquip(ammo.m_shared.m_name, true)) return;
+            if (Attack.FindAmmo(character, weapon) is not { } ammo) return;
+            ValidatedItemControlData data = ItemControlManager.GetItemControlData(ammo.m_shared.m_name, true);
+            if (data.CanEquip()) return;
             Player.m_localPlayer.Message(MessageHud.MessageType.Center, $"{ammo.m_shared.m_name} $msg_locked");
             __result = false;
         }
@@ -38,17 +39,21 @@ public static class Patches
         private static void Postfix(ItemDrop.ItemData item, ref bool __result)
         {
             if (ItemControlPlugin._Enabled.Value is ItemControlPlugin.Toggle.Off) return;
-            __result &= ItemControlManager.CanConsume(item.m_shared.m_name, true);
+            ValidatedItemControlData data = ItemControlManager.GetItemControlData(item.m_shared.m_name, true);
+
+            __result &= data.CanConsume();
         }
     }
 
-    [HarmonyPatch(typeof(Player), nameof(Player.HaveRequirements),typeof(Recipe),typeof(bool),typeof(int))]
+    [HarmonyPatch(typeof(Player), nameof(Player.HaveRequirements),typeof(Recipe),typeof(bool),typeof(int), typeof(int))]
     private static class CanCraft
     {
         private static void Postfix(Recipe recipe, ref bool __result)
         {
             if (ItemControlPlugin._Enabled.Value is ItemControlPlugin.Toggle.Off) return;
-            __result &= ItemControlManager.CanCraft(recipe.m_item.name, false);
+            ValidatedItemControlData data = ItemControlManager.GetItemControlData(recipe.m_item.name, false);
+
+            __result &= data.CanCraft();
         }
     }
     
@@ -58,19 +63,21 @@ public static class Patches
         private static void Postfix(ItemDrop.ItemData __instance, ref bool __result)
         {
             if (ItemControlPlugin._Enabled.Value is ItemControlPlugin.Toggle.Off) return;
-            __result &= ItemControlManager.CanEquip(__instance.m_shared.m_name, true);
+            ValidatedItemControlData data = ItemControlManager.GetItemControlData(__instance.m_shared.m_name, true);
+
+            __result &= data.CanEquip();
         }
     }
 
-    [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetTooltip), typeof(ItemDrop.ItemData),typeof(int),typeof(bool),typeof(float))]
+    [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetTooltip), typeof(ItemDrop.ItemData),typeof(int),typeof(bool),typeof(float), typeof(int))]
     private static class ItemData_AddTooltip
     {
         private static void Postfix(ItemDrop.ItemData item, ref string __result)
         {
             if (ItemControlPlugin._Enabled.Value is ItemControlPlugin.Toggle.Off) return;
-            if (!ItemControlManager.HaveRequirements(item.m_shared.m_name, true)) return;
-
-            __result += "\n" + ItemControlManager.GetTooltip(item.m_shared.m_name, true);
+            ValidatedItemControlData data = ItemControlManager.GetItemControlData(item.m_shared.m_name, true);
+            if (!data.HaveRequirements()) return;
+            __result += "\n" + data.GetToolTip();
         }
     }
 
@@ -118,7 +125,4 @@ public static class Patches
             ItemControlManager.InitOnServerChange();
         }
     }
-
-
-    
 }
